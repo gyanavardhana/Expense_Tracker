@@ -36,7 +36,7 @@ const App = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-4">
         <View className="items-center mt-20">
           <Image source={Darklogo} className="w-32 h-32" resizeMode="contain" />
-          <Text className="text-4xl text-terinary font-bold mt-4">Expeso</Text>
+          <Text className="text-4xl text-terinary font-bold mt-4">Expenso</Text>
         </View>
         <View className="items-center mt-10">
           <LottieView

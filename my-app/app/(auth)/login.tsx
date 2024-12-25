@@ -12,6 +12,7 @@ import LottieView from "lottie-react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
 const loginillus = require("../../assets/lotties/signup.json");
+const person = require("../../assets/icons/person.png")
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -25,8 +26,7 @@ const Login = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 bg-primary" showsVerticalScrollIndicator={false}>
         <View className="items-center justify-center mt-28 h-[250px] bg-primary">
           <LottieView
             source={loginillus}
@@ -35,13 +35,8 @@ const Login = () => {
             style={{ width: 250, height: 250 }}
           />
         </View>
-
-        {/* Title Section */}
         <View className="px-6 mb-6">
-          <Text className="text-3xl font-bold text-terinary">Welcome Back</Text>
-          <Text className="text-secondary mt-2">
-            Please login to your account
-          </Text>
+          <Text className="text-3xl font-extrabold text-terinary">Welcome Back</Text>
         </View>
 
         <View className="px-6 space-y-4">
@@ -95,7 +90,6 @@ const Login = () => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
   );
 };
 

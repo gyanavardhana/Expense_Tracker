@@ -25,8 +25,7 @@ const Signup = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 bg-primary" showsVerticalScrollIndicator={false}>
         <View className="items-center justify-center mt-20 h-[250px] bg-primary">
           <LottieView
             source={signupillus}
@@ -37,11 +36,8 @@ const Signup = () => {
         </View>
 
         <View className="px-6 mb-6">
-          <Text className="text-3xl font-bold text-terinary">
+          <Text className="text-3xl font-extrabold text-terinary">
             Create Account
-          </Text>
-          <Text className="text-secondary mt-2">
-            Please fill in the form to continue
           </Text>
         </View>
 
@@ -100,7 +96,6 @@ const Signup = () => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
   );
 };
 

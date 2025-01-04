@@ -1,11 +1,13 @@
-import { Slot, Stack } from "expo-router";
-import { StyleSheet, Image, View, Text } from "react-native";
-import { ImageSourcePropType } from "react-native";
+import { useEffect, useState } from "react";
+import { Keyboard, View, Text, Image } from "react-native";
 import { Tabs } from "expo-router";
+import { ImageSourcePropType } from "react-native";
+
 const HomeIcon = require("../../assets/icons/home.png");
 const RupeeIcon = require("../../assets/icons/rupee.png");
 const EditIcon = require("../../assets/icons/changeexpense.png");
 const ProfileIcon = require("../../assets/icons/profile.png");
+
 const TabIcon = ({
   source,
   focused,
@@ -25,14 +27,31 @@ const TabIcon = ({
     >
       <Image
         source={source}
-        tintColor={focused ? "#221C0F" : "#FBE4BD"} // Adapting to focus state
+        tintColor={focused ? "#221C0F" : "#FBE4BD"}
         resizeMode="contain"
         className="w-8 h-8"
       />
     </View>
   </View>
 );
+
 const TabsLayout = () => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <Tabs
       screenOptions={{
@@ -44,7 +63,7 @@ const TabsLayout = () => {
           borderRadius: 50,
           height: 70,
           marginHorizontal: 20,
-          marginBottom: 20,
+          marginBottom: isKeyboardVisible ? 0 : 20, // Adjust margin dynamically
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
@@ -52,6 +71,7 @@ const TabsLayout = () => {
           overflow: "hidden",
           position: "absolute",
         },
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen

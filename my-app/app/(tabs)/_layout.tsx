@@ -60,6 +60,7 @@ const TabsLayout = () => {
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: "#221C0F",
+          borderTopWidth: 0,
           borderRadius: 50,
           height: 70,
           marginHorizontal: 20,

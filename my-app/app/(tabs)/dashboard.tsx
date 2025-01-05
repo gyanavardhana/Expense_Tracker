@@ -8,7 +8,14 @@ import {
   ContributionGraph,
 } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
+interface Item {
+  id: string,
+  name: string,
+  category: string,
+  date: string,
+  amount: number
+}
 
 const expenses = [
   { id: "1", name: "Groceries", category: "Food", amount: 1500, date: "2025-01-01" },
@@ -20,13 +27,41 @@ const expenses = [
 ];
 
 const screenWidth = Dimensions.get("window").width;
+const handleToolTip: any = {}
 
-// Define the color palette
+
 const colorPalette = {
-  primary: "#FBE4BD",
-  secondary: "#967959",
-  terinary: "#221C0F",
+  background: "#FBE4BD",
+  cardBackground: "#2d2d2d",
+  text: "#ffffff",
+  accent: "#4a90e2",
+  // Consistent colors for pie chart
+  categoryColors: {
+    Food: "#4a90e2",
+    Housing: "#e2844a",
+    Utilities: "#50c878"
+  }
 };
+
+const ChartCard = ({ title, children }: {title: string, children: any}) => (
+  <View
+    style={{
+      backgroundColor: colorPalette.cardBackground,
+      borderRadius: 15,
+      padding: 15,
+      marginVertical: 10,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 10,
+    }}
+  >
+    <Text style={{ color: colorPalette.text, fontSize: 18, fontWeight: "bold", marginBottom: 15 }}>
+      {title}
+    </Text>
+    {children}
+  </View>
+);
 
 const Dashboard = ({ monthlyIncome }: { monthlyIncome: number }) => {
   const categories = [...new Set(expenses.map((expense) => expense.category))];
@@ -41,151 +76,105 @@ const Dashboard = ({ monthlyIncome }: { monthlyIncome: number }) => {
   const pieChartData = categoryTotals.map((item) => ({
     name: item.name,
     population: item.total,
-    color: `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`, // Random color
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15,
+    color: colorPalette.categoryColors[item.name as keyof typeof colorPalette.categoryColors],
+    legendFontColor: colorPalette.text,
+    legendFontSize: 12,
   }));
+  
 
   const progressChartData = {
     labels: ["Spent"],
     data: [totalExpenses / monthlyIncome],
   };
 
+  const commonChartConfig = {
+    backgroundGradientFrom: colorPalette.cardBackground,
+    backgroundGradientTo: colorPalette.cardBackground,
+    color: (opacity = 1) => `rgba(74, 144, 226, ${opacity})`,
+    strokeWidth: 2,
+    decimalPlaces: 0,
+    labelColor: () => colorPalette.text,
+  };
+
   return (
-    <ScrollView style={{ backgroundColor: colorPalette.primary }}>
-      <View className="flex-1  p-5 my-5">
-      <Text className="text-2xl  font-extrabold my-5">Dashboard </Text>
-      <View className="flex-1 items-center p-5">
-        {/* Line Chart */}
-        <View className="bg-terinary ">
-        <LineChart
-          data={{
-            labels: expenses.slice(0, 5).map((e) => e.date),
-            datasets: [{ data: expenses.slice(0, 5).map((e) => e.amount) }],
-          }}
-          width={screenWidth * 0.9}
-          height={220}
-          chartConfig={{
-            backgroundGradientFrom: colorPalette.primary,
-            backgroundGradientTo: colorPalette.primary,
-            color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-            strokeWidth: 2,
-          }}
-          bezier
-          style={{
-            borderRadius: 15,
-            shadowColor: colorPalette.secondary,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-          }}
-        />
-        </View>
-        
+    <ScrollView style={{ backgroundColor: colorPalette.background }}>
+      <View style={{ flex: 1, padding: 15, marginVertical: 5 }}>
+        <Text style={{ color: "#221C0F", fontSize: 24, fontWeight: "bold", marginBottom: 20, marginTop: 25 }}>
+          Expense Dashboard
+        </Text>
 
-        {/* Bar Chart */}
-        <BarChart
-          data={{
-            labels: categoryTotals.map((c) => c.name),
-            datasets: [{ data: categoryTotals.map((c) => c.total) }],
-          }}
-          width={screenWidth * 0.9}
-          height={220}
-          yAxisLabel="₹"
-          yAxisSuffix=""
-          chartConfig={{
-            backgroundGradientFrom: colorPalette.primary,
-            backgroundGradientTo: colorPalette.primary,
-            color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
-            strokeWidth: 2,
-          }}
-          style={{
-            borderRadius: 15,
-            shadowColor: colorPalette.secondary,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-          }}
-        />
+        <ChartCard title="Expense Trends">
+          <LineChart
+            data={{
+              labels: expenses.slice(0, 5).map((e) => e.date.slice(5)),
+              datasets: [{ data: expenses.slice(0, 5).map((e) => e.amount) }],
+            }}
+            width={screenWidth * 0.85}
+            height={220}
+            chartConfig={commonChartConfig}
+            bezier
+          />
+        </ChartCard>
 
-        {/* Pie Chart */}
-        <PieChart
-          data={pieChartData}
-          width={screenWidth * 0.9}
-          height={220}
-          chartConfig={{
-            backgroundColor: colorPalette.primary,
-            color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-          }}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="15"
-          style={{
-            borderRadius: 15,
-            shadowColor: colorPalette.secondary,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-          }}
-        />
+        <ChartCard title="Expenses by Category">
+          <BarChart
+            data={{
+              labels: categoryTotals.map((c) => c.name),
+              datasets: [{ data: categoryTotals.map((c) => c.total) }],
+            }}
+            width={screenWidth * 0.85}
+            height={220}
+            yAxisSuffix=""
+            yAxisLabel="₹"
+            chartConfig={{
+              ...commonChartConfig,
+              color: (opacity = 1) => `rgba(226, 132, 74, ${opacity})`,
+            }}
+          />
+        </ChartCard>
 
-        {/* Progress Chart */}
-        <ProgressChart
-          data={progressChartData}
-          width={screenWidth * 0.9}
-          height={220}
-          chartConfig={{
-            backgroundGradientFrom: colorPalette.primary,
-            backgroundGradientTo: colorPalette.primary,
-            color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
-            strokeWidth: 2,
-          }}
-          style={{
-            borderRadius: 15,
-            shadowColor: colorPalette.secondary,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-          }}
-        />
+        <ChartCard title="Category Distribution">
+          <PieChart
+            data={pieChartData}
+            width={screenWidth * 0.85}
+            height={220}
+            chartConfig={commonChartConfig}
+            accessor="population"
+            backgroundColor="transparent"
+            paddingLeft="15"
+          />
+        </ChartCard>
 
-        {/* Contribution Graph */}
-        <ContributionGraph
-          values={expenses
-            .slice(0, 7)
-            .map((e) => ({ date: e.date, count: e.amount }))}
-          endDate={new Date("2025-01-07")}
-          numDays={7}
-          width={screenWidth * 0.9}
-          height={220}
-          chartConfig={{
-            backgroundGradientFrom: colorPalette.primary,
-            backgroundGradientTo: colorPalette.primary,
-            color: (opacity = 1) => `rgba(0, 128, 128, ${opacity})`,
-          }}
-          tooltipDataAttrs={(value) => ({
-            fill: "rgba(0, 128, 128, 0.8)",
-            stroke: "black",
-          })}
-          style={{
-            borderRadius: 15,
-            shadowColor: colorPalette.secondary,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-          }}
-        />
+        <ChartCard title="Budget Utilization">
+          <ProgressChart
+            data={progressChartData}
+            width={screenWidth * 0.85}
+            height={220}
+            chartConfig={{
+              ...commonChartConfig,
+              color: (opacity = 1) => `rgba(80, 200, 120, ${opacity})`,
+            }}
+          />
+        </ChartCard>
 
-      </View>
-
-        
+        <ChartCard title="Daily Expense Activity">
+          <ContributionGraph
+            values={expenses.slice(0, 7).map((e) => ({ date: e.date, count: e.amount }))}
+            endDate={new Date("2025-01-07")}
+            numDays={7}
+            width={screenWidth * 0.85}
+            height={220}
+            chartConfig={commonChartConfig}
+            tooltipDataAttrs={(value) => handleToolTip}
+          />
+        </ChartCard>
       </View>
     </ScrollView>
   );
 };
 
 const newDashboard = () => {
-  return <Dashboard monthlyIncome={50000} />
+  return <Dashboard monthlyIncome={40000} />;
 };
 
 export default newDashboard;

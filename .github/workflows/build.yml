@@ -3,7 +3,7 @@ name: Build Android & iOS on Commit
 on:
   push:
     branches:
-      - main  # Change to your deployment branch
+      - testfastlane  # Change to your deployment branch
 
 jobs:
   android-build:
@@ -18,7 +18,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Set up Fastlane
         run: gem install fastlane
@@ -38,7 +38,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Set up Fastlane
         run: gem install fastlane

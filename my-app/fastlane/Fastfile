@@ -1,0 +1,11 @@
+platform :android do
+  lane :beta do
+    gradle(task: "assembleRelease")
+  end
+end
+
+platform :ios do
+  lane :beta do
+    build_app(scheme: "YourAppScheme")
+  end
+end
